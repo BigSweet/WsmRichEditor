@@ -7,14 +7,17 @@ import android.text.ParcelableSpan;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.style.ClickableSpan;
 import android.text.style.ImageSpan;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.yuruiyin.richeditor.config.AppConfig;
 import com.yuruiyin.richeditor.enumtype.RichTypeEnum;
 import com.yuruiyin.richeditor.model.AtVm;
@@ -1221,6 +1224,12 @@ public class RichUtils {
         AtStyleSpan colorSpan = new AtStyleSpan(new AtVm(bean.getUser_id(), bean.getNickname()));
         ssb.setSpan(colorSpan, 0, atText.length() - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
+//        ssb.setSpan(new ClickableSpan() {
+//            @Override
+//            public void onClick(@NonNull View widget) {
+//                ToastUtils.showShort("点击了at" + bean.getNickname());
+//            }
+//        }, 0, atText.length() - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         // 插入到EditText中
         int start = mRichEditText.getSelectionStart();
         mRichEditText.getEditableText().insert(start, ssb);

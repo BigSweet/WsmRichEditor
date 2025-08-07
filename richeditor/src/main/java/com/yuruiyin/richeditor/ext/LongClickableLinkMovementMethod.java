@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.yuruiyin.richeditor.span.AtStyleSpan;
 import com.yuruiyin.richeditor.span.BlockImageSpan;
 
@@ -69,6 +70,7 @@ public class LongClickableLinkMovementMethod extends LinkMovementMethod {
                     if (atSpans.length > 0) {
                         ((EditText) textView).setSelection(spannable.getSpanEnd(atSpans[0]) + 1,
                                 spannable.getSpanEnd(atSpans[0]) + 1);
+                        ToastUtils.showShort("点击了at"+atSpans[0].getAtVm().getName());
                         return true;
                     }
                 }
