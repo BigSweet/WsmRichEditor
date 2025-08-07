@@ -1,0 +1,38 @@
+plugins {
+    alias(libs.plugins.jetbrainsKotlinAndroid)
+}
+apply plugin: 'com.android.library'
+
+
+android {
+    compileSdk 34
+    namespace 'com.yuruiyin.richeditor'
+    defaultConfig {
+        minSdk 24
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    api 'androidx.appcompat:appcompat:1.1.0'
+    implementation("com.blankj:utilcodex:1.31.1")
+    // 圆角图片
+    api 'com.makeramen:roundedimageview:2.3.0'
+}
