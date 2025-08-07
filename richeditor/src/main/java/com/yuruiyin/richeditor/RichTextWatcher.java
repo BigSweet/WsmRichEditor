@@ -4,9 +4,13 @@ import android.content.Context;
 import android.text.Editable;
 import android.text.ParcelableSpan;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.yuruiyin.richeditor.config.AppConfig;
+import com.yuruiyin.richeditor.event.SendAtEvent;
 import com.yuruiyin.richeditor.lineheightedittext.TextWatcher;
 import com.yuruiyin.richeditor.span.BlockImageSpan;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * Title: 编辑器字符变化监听器
@@ -130,7 +134,13 @@ public class RichTextWatcher implements TextWatcher {
 
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
+        String setMsg = s.toString();
+        if (setMsg.length() >= beforeEditContentLen && mEditText.getSelectionEnd() > 0 && setMsg.charAt(mEditText.getSelectionEnd() - 1) == '@') {
+            ToastUtils.showShort("输入了at");
+            EventBus.getDefault().post(new SendAtEvent());
+            //模拟选择了人
 
+        }
     }
 
     private boolean isInUndo(String preContent, String curContent) {

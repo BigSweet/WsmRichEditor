@@ -492,6 +492,19 @@ public class RichEditText extends LineHeightEditText {
         mRichUtils.insertAtUser(bean);
 
     }
+    public void insertSendAtUser(FriendBean bean) {
+        if (getSelectionEnd() == 0) {
+            getText().delete(0, 1);
+        } else {
+            int index = getText().toString().indexOf("@", getSelectionEnd() - 1);
+            if (index != -1) {
+                getText().delete(index, index + 1);
+            }
+        }
+        nameList.add(bean);
+        mRichUtils.insertAtUser(bean);
+
+    }
 
     public class AtSpan {
         private int userId;

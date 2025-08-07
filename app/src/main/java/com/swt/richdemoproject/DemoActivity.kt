@@ -30,6 +30,7 @@ import com.yuruiyin.richeditor.RichEditText
 import com.yuruiyin.richeditor.enumtype.BlockImageSpanType
 import com.yuruiyin.richeditor.enumtype.FileTypeEnum
 import com.yuruiyin.richeditor.enumtype.RichTypeEnum
+import com.yuruiyin.richeditor.event.SendAtEvent
 import com.yuruiyin.richeditor.model.BlockImageSpanVm
 import com.yuruiyin.richeditor.model.DividerVm
 import com.yuruiyin.richeditor.model.DraftEditorBlock
@@ -45,6 +46,7 @@ import com.yuruiyin.richeditor.utils.FileUtil
 import com.yuruiyin.richeditor.utils.JsonUtil
 import com.yuruiyin.richeditor.utils.ViewUtil
 import com.yuruiyin.richeditor.utils.WindowUtil
+import org.greenrobot.eventbus.EventBus
 
 class DemoActivity : ComponentActivity() {
 
@@ -249,7 +251,18 @@ class DemoActivity : ComponentActivity() {
     }
 
 
+    @org.greenrobot.eventbus.Subscribe(threadMode = org.greenrobot.eventbus.ThreadMode.MAIN)
+    fun onEvent(event: SendAtEvent) {
+        richEditText.insertSendAtUser(FriendBean("你好", testId))
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
+    }
+
     public fun registerEvents() {
+        EventBus.getDefault().register(this)
         // 生成json数据，显示到TextView上
         btnCreateJson.setOnClickListener {
             val draftEditorBlockList = convertEditorContent(richEditText.content)
@@ -524,7 +537,7 @@ class DemoActivity : ComponentActivity() {
                 OPPO_IMAGE_PATH
             }
         }
-        val imageVm = ImageVm(realImagePath, "2","https://static.yooloe.com/app/board/161936_square.png")
+        val imageVm = ImageVm(realImagePath, "2", "https://static.yooloe.com/app/board/161936_square.png")
         doAddBlockImageSpan(realImagePath, imageVm)
         Log.d(TAG, "EditText的高度： " + richEditText.height)
     }
@@ -578,7 +591,7 @@ class DemoActivity : ComponentActivity() {
             val fileType = FileUtil.getFileType(realImagePath) ?: return
             when (fileType) {
                 FileTypeEnum.STATIC_IMAGE, FileTypeEnum.GIF -> {
-                    val imageVm = ImageVm(realImagePath, "2","https://static.yooloe.com/app/board/161936_square.png")
+                    val imageVm = ImageVm(realImagePath, "2", "https://static.yooloe.com/app/board/161936_square.png")
 //                    doAddBlockImageSpan(realImagePath, imageVm)
                     doAddBlockImageSpan(realImagePath, imageVm)
                 }
