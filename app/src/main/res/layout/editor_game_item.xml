@@ -1,36 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    >
+    android:layout_marginTop="15dp"
+    android:background="@color/black">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/editor_game_height"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
+        android:layout_marginHorizontal="15dp"
         android:background="@drawable/bg_editor_game"
-        >
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-        <ImageView
+        <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/ivGameIcon"
             android:layout_width="@dimen/editor_game_icon_size"
             android:layout_height="@dimen/editor_game_icon_size"
-            android:src="@mipmap/icon_game_zhuoyao"
             android:layout_marginLeft="7dp"
-            />
+            android:src="@mipmap/icon_game_zhuoyao"
+            app:riv_border_color="@color/black"
+            app:riv_border_width="2dp"
+            app:riv_corner_radius="6dp" />
 
         <TextView
             android:id="@+id/tvGameName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="7dp"
+            android:layout_alignTop="@+id/ivGameIcon"
+            android:layout_marginLeft="13dp"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@+id/ivGameIcon"
             android:text="一起来捉妖"
-            android:textSize="16dp"
             android:textColor="#ff000000"
-            />
+            android:textSize="16dp"
+            android:textStyle="bold" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/item_game_desc_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/ivGameIcon"
+            android:layout_marginLeft="13dp"
+            android:layout_marginBottom="8dp"
+            android:layout_toRightOf="@+id/ivGameIcon"
+            android:text="2025 / 德式 / 卡牌 / 聚会 / 1-4 人"
+            android:textColor="#59000000"
+            android:textSize="11sp" />
+
+    </RelativeLayout>
 
 </FrameLayout>

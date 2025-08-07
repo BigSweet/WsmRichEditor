@@ -2,6 +2,7 @@ package com.swt.richdemoproject
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
@@ -12,9 +13,17 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.core.content.ContextCompat
+import com.blankj.utilcode.util.ConvertUtils
 import com.blankj.utilcode.util.KeyboardUtils
+import com.blankj.utilcode.util.ScreenUtils
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.makeramen.roundedimageview.RoundedImageView
 import com.yuruiyin.richeditor.FriendBean
 import com.yuruiyin.richeditor.RichEditText
 import com.yuruiyin.richeditor.enumtype.BlockImageSpanType
@@ -75,7 +84,7 @@ class DemoActivity : ComponentActivity() {
     }
 
     private val imageWidth by lazy {
-        resources.getDimension(R.dimen.editor_image_width).toInt()
+        ScreenUtils.getScreenDensity() - ConvertUtils.dp2px(30f)
     }
 
     private val imageMaxHeight by lazy {
@@ -456,31 +465,45 @@ class DemoActivity : ComponentActivity() {
 
     private fun doAddGame(gameVm: GameVm, isFromDraft: Boolean = false) {
         val gameItemView = layoutInflater.inflate(R.layout.editor_game_item, null)
-        val ivGameIcon = gameItemView.findViewById<ImageView>(R.id.ivGameIcon)
+        val ivGameIcon = gameItemView.findViewById<RoundedImageView>(R.id.ivGameIcon)
         val tvGameName = gameItemView.findViewById<TextView>(R.id.tvGameName)
-        ivGameIcon.setImageResource(R.mipmap.icon_game_zhuoyao)
+        val item_game_desc_tv = gameItemView.findViewById<TextView>(R.id.item_game_desc_tv)
+//        ivGameIcon.setImageResource(R.mipmap.icon_game_zhuoyao)
+        Glide.with(this).load(gameVm.image)
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                    return false
+                }
+
+                override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                    ivGameIcon.layoutParams.width = gameIconSize
+                    ivGameIcon.layoutParams.height = gameIconSize
+                    ivGameIcon.setImageDrawable(resource)
+                    val gameItemWidth = getEditTextWidthWithoutPadding()
+                    ViewUtil.layoutView(gameItemView, gameItemWidth, gameItemHeight)
+
+                    val blockImageSpanVm = BlockImageSpanVm(gameVm, gameItemWidth, imageMaxHeight)
+                    blockImageSpanVm.isFromDraft = isFromDraft
+                    richEditText.insertBlockImage(BitmapUtil.getBitmap(gameItemView), blockImageSpanVm) { blockImageSpan ->
+                        val retGameVm = blockImageSpan.blockImageSpanVm.spanObject as GameVm
+                        // 点击游戏item
+                        Toast.makeText(this@DemoActivity, "短按了游戏：${retGameVm.name}", Toast.LENGTH_SHORT).show()
+                    }
+                    return false
+                }
+
+            })
+            .submit()
+        item_game_desc_tv.setText(gameVm.desc)
         tvGameName.text = gameVm.name
 
-        ivGameIcon.layoutParams.width = gameIconSize
-        ivGameIcon.layoutParams.height = gameIconSize
-
-        val gameItemWidth = getEditTextWidthWithoutPadding()
-        ViewUtil.layoutView(gameItemView, gameItemWidth, gameItemHeight)
-
-        val blockImageSpanVm = BlockImageSpanVm(gameVm, gameItemWidth, imageMaxHeight)
-        blockImageSpanVm.isFromDraft = isFromDraft
-        richEditText.insertBlockImage(BitmapUtil.getBitmap(gameItemView), blockImageSpanVm) { blockImageSpan ->
-            val retGameVm = blockImageSpan.blockImageSpanVm.spanObject as GameVm
-            // 点击游戏item
-            Toast.makeText(this, "短按了游戏：${retGameVm.name}", Toast.LENGTH_SHORT).show()
-        }
     }
 
     /**
      * 插入游戏
      */
     private fun handleAddGame() {
-        val gameVm = GameVm(1, "一起来捉妖")
+        val gameVm = GameVm(1, "一起来捉妖", "https://static.yooloe.com/app/board/161936_square.png", "2025 / 德式 / 卡牌 / 聚会 / 1-4 人")
         doAddGame(gameVm)
         Log.d(TAG, "EditText的高度： " + richEditText.height)
     }
@@ -525,7 +548,8 @@ class DemoActivity : ComponentActivity() {
         realImagePath: String, blockImageSpanObtainObject: IBlockImageSpanObtainObject, isFromDraft: Boolean = false,
     ) {
 //        val blockImageSpanVm = BlockImageSpanVm(blockImageSpanObtainObject) // 不指定宽高，使用图片原始大小（但组件内对最大宽和最大高还是有约束的）
-        val blockImageSpanVm = BlockImageSpanVm(blockImageSpanObtainObject, imageWidth, imageMaxHeight) // 指定宽高
+        val wsmWidth = ScreenUtils.getScreenWidth() - ConvertUtils.dp2px(30f)
+        val blockImageSpanVm = BlockImageSpanVm(blockImageSpanObtainObject, wsmWidth.toInt(), imageMaxHeight) // 指定宽高
         blockImageSpanVm.isFromDraft = isFromDraft
         richEditText.insertBlockImage(realImagePath, blockImageSpanVm) { blockImageSpan ->
             val spanObtainObject = blockImageSpan.blockImageSpanVm.spanObject

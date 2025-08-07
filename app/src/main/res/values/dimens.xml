@@ -13,9 +13,9 @@
     <dimen name="editor_padding_right">15dp</dimen>
 
     <!-- 编辑器中的游戏图标的高度 -->
-    <dimen name="editor_game_icon_size">55dp</dimen>
+    <dimen name="editor_game_icon_size">58dp</dimen>
 
     <!-- 编辑器中的游戏item的高度 -->
-    <dimen name="editor_game_height">70dp</dimen>
+    <dimen name="editor_game_height">73dp</dimen>
 
 </resources>
