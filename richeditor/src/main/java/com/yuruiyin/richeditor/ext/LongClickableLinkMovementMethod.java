@@ -70,7 +70,7 @@ public class LongClickableLinkMovementMethod extends LinkMovementMethod {
                     if (atSpans.length > 0) {
                         ((EditText) textView).setSelection(spannable.getSpanEnd(atSpans[0]) + 1,
                                 spannable.getSpanEnd(atSpans[0]) + 1);
-                        ToastUtils.showShort("点击了at"+atSpans[0].getAtVm().getName());
+                        ToastUtils.showShort("点击了at" + atSpans[0].getAtVm().getName());
                         return true;
                     }
                 }
