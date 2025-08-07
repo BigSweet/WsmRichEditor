@@ -10,6 +10,6 @@ import com.yuruiyin.richeditor.model.IBlockImageSpanObtainObject
  * @author yuruiyin
  * @version 2019-05-06
  */
-data class ImageVm(val path: String, val id: String): IBlockImageSpanObtainObject {
+data class ImageVm(val path: String, val id: String,val url:String): IBlockImageSpanObtainObject {
     override fun getType(): String = BlockImageSpanType.IMAGE
 }

@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import com.blankj.utilcode.util.ConvertUtils
 import com.blankj.utilcode.util.KeyboardUtils
 import com.blankj.utilcode.util.ScreenUtils
+import com.blankj.utilcode.util.ThreadUtils
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -476,18 +477,20 @@ class DemoActivity : ComponentActivity() {
                 }
 
                 override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-                    ivGameIcon.layoutParams.width = gameIconSize
-                    ivGameIcon.layoutParams.height = gameIconSize
-                    ivGameIcon.setImageDrawable(resource)
-                    val gameItemWidth = getEditTextWidthWithoutPadding()
-                    ViewUtil.layoutView(gameItemView, gameItemWidth, gameItemHeight)
+                    ThreadUtils.runOnUiThread {
+                        ivGameIcon.layoutParams.width = gameIconSize
+                        ivGameIcon.layoutParams.height = gameIconSize
+                        ivGameIcon.setImageDrawable(resource)
+                        val gameItemWidth = getEditTextWidthWithoutPadding()
+                        ViewUtil.layoutView(gameItemView, gameItemWidth, gameItemHeight)
 
-                    val blockImageSpanVm = BlockImageSpanVm(gameVm, gameItemWidth, imageMaxHeight)
-                    blockImageSpanVm.isFromDraft = isFromDraft
-                    richEditText.insertBlockImage(BitmapUtil.getBitmap(gameItemView), blockImageSpanVm) { blockImageSpan ->
-                        val retGameVm = blockImageSpan.blockImageSpanVm.spanObject as GameVm
-                        // 点击游戏item
-                        Toast.makeText(this@DemoActivity, "短按了游戏：${retGameVm.name}", Toast.LENGTH_SHORT).show()
+                        val blockImageSpanVm = BlockImageSpanVm(gameVm, gameItemWidth, imageMaxHeight)
+                        blockImageSpanVm.isFromDraft = isFromDraft
+                        richEditText.insertBlockImage(BitmapUtil.getBitmap(gameItemView), blockImageSpanVm) { blockImageSpan ->
+                            val retGameVm = blockImageSpan.blockImageSpanVm.spanObject as GameVm
+                            // 点击游戏item
+                            Toast.makeText(this@DemoActivity, "短按了游戏：${retGameVm.name}", Toast.LENGTH_SHORT).show()
+                        }
                     }
                     return false
                 }
@@ -521,7 +524,7 @@ class DemoActivity : ComponentActivity() {
                 OPPO_IMAGE_PATH
             }
         }
-        val imageVm = ImageVm(realImagePath, "2")
+        val imageVm = ImageVm(realImagePath, "2","https://static.yooloe.com/app/board/161936_square.png")
         doAddBlockImageSpan(realImagePath, imageVm)
         Log.d(TAG, "EditText的高度： " + richEditText.height)
     }
@@ -575,7 +578,8 @@ class DemoActivity : ComponentActivity() {
             val fileType = FileUtil.getFileType(realImagePath) ?: return
             when (fileType) {
                 FileTypeEnum.STATIC_IMAGE, FileTypeEnum.GIF -> {
-                    val imageVm = ImageVm(realImagePath, "2")
+                    val imageVm = ImageVm(realImagePath, "2","https://static.yooloe.com/app/board/161936_square.png")
+//                    doAddBlockImageSpan(realImagePath, imageVm)
                     doAddBlockImageSpan(realImagePath, imageVm)
                 }
 

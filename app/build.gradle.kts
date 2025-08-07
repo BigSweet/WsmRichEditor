@@ -70,11 +70,8 @@ dependencies {
     implementation(project(":richeditor"))
     implementation(project(":mylibrary"))
     implementation("com.blankj:utilcodex:1.31.1")
-
     kapt("com.github.bumptech.glide:compiler:4.13.0")
-    implementation("com.github.bumptech.glide:okhttp3-integration:4.13.0")
-    implementation("com.github.bumptech.glide:annotations:4.13.0")
-    implementation("com.github.bumptech.glide:glide:4.13.0")
+
 
 
 

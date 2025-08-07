@@ -27,8 +27,15 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import com.blankj.utilcode.util.ThreadUtils;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.yuruiyin.richeditor.callback.OnImageClickListener;
 import com.yuruiyin.richeditor.config.AppConfig;
@@ -38,6 +45,7 @@ import com.yuruiyin.richeditor.enumtype.RichTypeEnum;
 import com.yuruiyin.richeditor.ext.LongClickableLinkMovementMethod;
 import com.yuruiyin.richeditor.lineheightedittext.LineHeightEditText;
 import com.yuruiyin.richeditor.model.BlockImageSpanVm;
+import com.yuruiyin.richeditor.model.ImageVm;
 import com.yuruiyin.richeditor.model.RichEditorBlock;
 import com.yuruiyin.richeditor.model.StyleBtnVm;
 import com.yuruiyin.richeditor.span.BlockImageSpan;
@@ -337,30 +345,102 @@ public class RichEditText extends LineHeightEditText {
 
         View imageItemView = mActivity.getLayoutInflater().inflate(R.layout.rich_editor_image, null);
         RoundedImageView imageView = imageItemView.findViewById(R.id.image);
-        imageView.setImageDrawable(drawable);
-        // 设置圆角
-        imageView.setCornerRadius(gImageRadius);
+        if (blockImageSpanVm.getSpanObject() instanceof ImageVm) {
+            if (((ImageVm) blockImageSpanVm.getSpanObject()).getUrl() != null && (!((ImageVm) blockImageSpanVm.getSpanObject()).getUrl().isEmpty())) {
 
-        // 控制视频、gif、长图标识的显示和隐藏
-        setMarkIconVisibility(imageItemView, blockImageSpanVm);
+                int finalResImageHeight = resImageHeight;
+                Glide.with(getContext()).load(((ImageVm) blockImageSpanVm.getSpanObject()).getUrl()).addListener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
 
-        ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
-        layoutParams.width = resImageWidth;
-        layoutParams.height = resImageHeight;
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        ThreadUtils.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                imageView.setImageDrawable(resource);
+                                // 设置圆角
+                                imageView.setCornerRadius(gImageRadius);
 
-        ViewUtil.layoutView(
-                imageItemView,
-                resImageWidth + imageSpanPaddingLeft + imageSpanPaddingRight,
-                resImageHeight + imageSpanPaddingTop + imageSpanPaddingBottom
-        );
+                                // 控制视频、gif、长图标识的显示和隐藏
+                                setMarkIconVisibility(imageItemView, blockImageSpanVm);
 
-        BlockImageSpan blockImageSpan = new BlockImageSpan(
-                mActivity, BitmapUtil.getBitmap(imageItemView), blockImageSpanVm
-        );
-        mRichUtils.insertBlockImageSpan(blockImageSpan);
+                                ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+                                layoutParams.width = resImageWidth;
+                                layoutParams.height = finalResImageHeight;
 
-        // 设置图片点击监听器
-        blockImageSpan.setOnClickListener(onImageClickListener);
+                                ViewUtil.layoutView(
+                                        imageItemView,
+                                        resImageWidth + imageSpanPaddingLeft + imageSpanPaddingRight,
+                                        finalResImageHeight + imageSpanPaddingTop + imageSpanPaddingBottom
+                                );
+
+                                BlockImageSpan blockImageSpan = new BlockImageSpan(
+                                        mActivity, BitmapUtil.getBitmap(imageItemView), blockImageSpanVm
+                                );
+                                mRichUtils.insertBlockImageSpan(blockImageSpan);
+                                // 设置图片点击监听器
+                                blockImageSpan.setOnClickListener(onImageClickListener);
+                            }
+                        });
+
+                        return false;
+                    }
+                }).submit();
+            } else {
+                imageView.setImageDrawable(drawable);
+                // 设置圆角
+                imageView.setCornerRadius(gImageRadius);
+
+                // 控制视频、gif、长图标识的显示和隐藏
+                setMarkIconVisibility(imageItemView, blockImageSpanVm);
+
+                ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+                layoutParams.width = resImageWidth;
+                layoutParams.height = resImageHeight;
+
+                ViewUtil.layoutView(
+                        imageItemView,
+                        resImageWidth + imageSpanPaddingLeft + imageSpanPaddingRight,
+                        resImageHeight + imageSpanPaddingTop + imageSpanPaddingBottom
+                );
+
+                BlockImageSpan blockImageSpan = new BlockImageSpan(
+                        mActivity, BitmapUtil.getBitmap(imageItemView), blockImageSpanVm
+                );
+                mRichUtils.insertBlockImageSpan(blockImageSpan);
+                // 设置图片点击监听器
+                blockImageSpan.setOnClickListener(onImageClickListener);
+            }
+
+        } else {
+            imageView.setImageDrawable(drawable);
+            // 设置圆角
+            imageView.setCornerRadius(gImageRadius);
+
+            // 控制视频、gif、长图标识的显示和隐藏
+            setMarkIconVisibility(imageItemView, blockImageSpanVm);
+
+            ViewGroup.LayoutParams layoutParams = imageView.getLayoutParams();
+            layoutParams.width = resImageWidth;
+            layoutParams.height = resImageHeight;
+
+            ViewUtil.layoutView(
+                    imageItemView,
+                    resImageWidth + imageSpanPaddingLeft + imageSpanPaddingRight,
+                    resImageHeight + imageSpanPaddingTop + imageSpanPaddingBottom
+            );
+
+            BlockImageSpan blockImageSpan = new BlockImageSpan(
+                    mActivity, BitmapUtil.getBitmap(imageItemView), blockImageSpanVm
+            );
+            mRichUtils.insertBlockImageSpan(blockImageSpan);
+            // 设置图片点击监听器
+            blockImageSpan.setOnClickListener(onImageClickListener);
+        }
+
     }
 
     /**
